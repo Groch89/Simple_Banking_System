@@ -935,7 +935,7 @@ files:
 - name: Nowy dokument tekstowy.txt
   visible: true
   learner_created: true
-- name: src/banking/DatabaseOperations.java
+- name: src/banking/DbOperations.java
   visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/projects/93/stages/518/implement
