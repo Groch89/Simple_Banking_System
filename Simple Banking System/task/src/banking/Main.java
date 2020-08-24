@@ -3,7 +3,6 @@ package banking;
 import java.util.Scanner;
 
 public class Main {
-    protected static String url;
 
     private static final Scanner scanner = new Scanner(System.in);
 
@@ -114,8 +113,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        url = urlFromCommandLine(args);
-        DbOperations.setUrl(url);
+        DbOperations.setUrl(urlFromCommandLine(args));
         DbOperations.createTable();
         menu();
     }
