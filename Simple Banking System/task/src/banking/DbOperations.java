@@ -1,23 +1,34 @@
 package banking;
 
 import org.sqlite.SQLiteDataSource;
+
 import java.sql.*;
 
 public class DbOperations {
 
     private static final SQLiteDataSource dataSource = new SQLiteDataSource();
 
-    protected static void setUrl (String url) {
+    protected static void setUrl(String url) {             // used set url for DB, using passed run argument
         dataSource.setUrl(url);
     }
 
-    protected static void insert(int id, String number, String pin) {
+    private static Connection connect() {                   // connects to DB, and returns connection as Object
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return connection;
+    }
 
-        String sql = "INSERT INTO card(id, number, pin) VALUES (?,?,?)";
-//        System.out.println("To dodajemy do DB " + id + ", number:  " + number + ". pin:   " + pin);
+    protected static void insert(int id, String number, String pin) {       // adding new record to DB
+
+        String sql = "INSERT INTO card(id, number, pin) VALUES (?,?,?)";    // some sql magic
 
         try (Connection connection = connect();
              PreparedStatement prepStat = connection.prepareStatement(sql)) {
+
             prepStat.setInt(1, id);
             prepStat.setString(2, number);
             prepStat.setString(3, pin);
@@ -27,34 +38,21 @@ public class DbOperations {
         }
     }
 
-    protected static int selectCardNumberAndReturnId(String cardNumber) {
-        // a co jak wpadnei numer ktorego nie ma? NO CO KURTWA WTEDY
-
-
+    protected static int selectCardNumberAndReturnId(String cardNumber) {       // look for this card number, and return id when found, or -1 otherwise
         String sql = "SELECT id FROM card WHERE number = ?";
-//        System.out.println("Tego nr szukamy w tabeli " + cardNumber);
-
         try (Connection connection = connect();
              PreparedStatement prepStat = connection.prepareStatement(sql)) {
 
-//            System.out.println("bP 1");
             prepStat.setString(1, cardNumber);
-
-//            System.out.println("bP 2");
-
             ResultSet rs = prepStat.executeQuery();
-//            System.out.println("bP 3");
 
             while (rs.next()) {
 //                System.out.println("Taki Id znalazlem dla tego nr konta " + rs.getInt("id"));
                 return rs.getInt("id");
             }
-
         } catch (SQLException e) {
-            System.out.println("ERRRRROR KURWA  " + e.getMessage());
+            System.out.println("ERRRRROR: " + e.getMessage());
         }
-
-//        System.out.println("gowno znalazlem, zwracam -1");
         return -1;
     }
 
@@ -66,24 +64,18 @@ public class DbOperations {
         try (Connection connection = connect();
              PreparedStatement prepStat = connection.prepareStatement(sql)) {
 
-//            System.out.println("BP1");
             prepStat.setInt(1, id);
-
-//            System.out.println("BP1 2");
             ResultSet rs = prepStat.executeQuery();
 
-//            System.out.println("BP1 3");
-            while (rs.next()) {
+//            while (rs.next()) {
 //                System.out.println("taki pin znalazlem: " + rs.getString("pin"));
-                return rs.getString("pin");
-            }
-
-
+            return rs.getString("pin");
+//            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
-//        System.out.println("gowno znalalzem, wiec zwracam ZERO slownie");
+//        System.out.println("nic nie znalalzem, wiec zwracam ZERO slownie");           // na potrzeby testow
         return "zero";
     }
 
@@ -95,33 +87,28 @@ public class DbOperations {
         try (Connection connection = connect();
              PreparedStatement prepStat = connection.prepareStatement(sql)) {
 
-//            System.out.println("Balance   # 1");
             prepStat.setInt(1, id);
-
-//            System.out.println("Balance   # 2");
             ResultSet rs = prepStat.executeQuery();
 
-//            System.out.println("Balance   # 3");
-            while (rs.next()) {
+//            while (rs.next()) {
 //                System.out.println("taki balance znalazlem: " + rs.getInt("balance"));
-                return rs.getInt("balance");
-            }
-
-
+            return rs.getInt("balance");
+//            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
-//        System.out.println("nie znalazlem pinu wiec oddaje -1");
+//        System.out.println("nie znalazlem pinu wiec oddaje -1");           // na potrzeby testow
         return -1;
     }
 
-    protected static int getMaxId() {
+    protected static int getNextFreeId() {
         String sql = "SELECT MAX(id) FROM card";
 
         try (Connection connection = connect();
              Statement statement = connection.createStatement();
              ResultSet rs = statement.executeQuery(sql)) {
+
             return rs.getInt(1) + 1;
         } catch (SQLException e) {
             System.out.println("Error jakis :< :" + e.getMessage());
@@ -131,29 +118,18 @@ public class DbOperations {
         return 0;
     }
 
-    private static Connection connect() {
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return connection;
-    }
-
     protected static void createTable() {
 
-        try (Connection connection = dataSource.getConnection()) {
-            try (Statement statement = connection.createStatement()) {
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS card(\n"
-                        + "id INTEGER NOT NULL PRIMARY KEY,\n"
-                        + "number TEXT NOT NULL,\n"
-                        + "pin TEXT NOT NULL,\n"
-                        + "balance INTEGER DEFAULT 0\n"
-                        + ");");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        String sql = "CREATE TABLE IF NOT EXISTS card(\n"
+                + "id INTEGER NOT NULL PRIMARY KEY,\n"
+                + "number TEXT NOT NULL,\n"
+                + "pin TEXT NOT NULL,\n"
+                + "balance INTEGER DEFAULT 0 );\n";
+
+        try (Connection connection = connect();
+             Statement statement = connection.createStatement()) {
+
+            statement.executeUpdate(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
