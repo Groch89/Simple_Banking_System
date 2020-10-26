@@ -28,7 +28,7 @@ public class Main {
                             usersAccount.getPin() + "\n");                  // and corresponding pin
 
                     /*
-                     *   Below, after creation od card object, we inserting values into database
+                     *   Below, after creation od card object, we are inserting values into database
                      *   using insert(id, card number and pin) method.
                      *   Our database can already contain a few records, so we call getNextFreeId() method, which returns
                      *   us "max id + 1".
@@ -53,8 +53,8 @@ public class Main {
                     } else {                                                        // card found. check if Pin is correct
                         if (inputtedPin.equals(DbOperations.getPinFromId(id))) {    // compare inputted pin and pin from card (using cards id)
                             System.out.println("You have successfully logged in!\n");
-                            boolean isExitedFromLoginPage = logIn(id);              // we are now going to signed in site. Log in using id
-                            if (isExitedFromLoginPage) {                            // depending of users choice from logged in menu,
+                            boolean isExitedFromLoginPage = logIn(id);              // we are now going to log in using id.
+                            if (isExitedFromLoginPage) {                            // Depending of users choice from logged in menu,
                                 isRunning = false;                                  // we can continue this switch loop, or exit
                             }
                         } else {
@@ -75,22 +75,39 @@ public class Main {
     }
 
     public static boolean logIn(int id) {               // log in using id
-        boolean isLoggedIn = true;                      // loop as long this vart is set to true
-        boolean isExited = false;                       // used to let know if we log out, or force quit
+        boolean isLoggedIn = true;                      // loop as long as this var is set to true
+        boolean isExited = false;                       // this var is used to let know if user whats to log out or force quited
 
         while (isLoggedIn) {
             System.out.println("1. Balance");
-            System.out.println("2. Log out");
+            System.out.println("2. Add income");
+            System.out.println("3. Do transfer");
+            System.out.println("4. Close account");
+            System.out.println("5. Log out");
             System.out.println("0. Exit");
 
             int usersChoice = scanner.nextInt();
+            System.out.println("");
 
             switch (usersChoice) {
                 case 1:                                                     // case 1: show balance
                     int balance = DbOperations.getBalanceFromDbUsingId(id); // use id to get balance from db
                     System.out.println("Balance: " + balance + "\n");       // and show it to user
                     break;
-                case 2:                                                     // case 2: to log out
+                case 2:
+                    // dodaj kase do konta
+                    System.out.println("Enter income:");
+                    int income = scanner.nextInt();
+                    DbOperations.addCashToCard(income, id);
+                    System.out.println("Income was added!\n");
+                    break;
+                case 3:
+                    // wykonaj przelew
+                    break;
+                case 4:
+                    // zamknij konto
+                    break;
+                case 5:                                                     // case 5: to log out
                     isLoggedIn = false;                                     //set to false to terminate while loop
                     System.out.println("You have successfully logged out!\n");  // isExited remains false,
                     break;                                                  // so we just sign out, not quiting

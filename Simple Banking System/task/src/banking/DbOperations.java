@@ -8,7 +8,7 @@ public class DbOperations {
 
     private static final SQLiteDataSource dataSource = new SQLiteDataSource();
 
-    protected static void setUrl(String url) {             // used set url for DB, using passed run argument
+    protected static void setUrl(String url) {             // used to set DB's URL with passed run argument
         dataSource.setUrl(url);
     }
 
@@ -46,10 +46,10 @@ public class DbOperations {
             prepStat.setString(1, cardNumber);
             ResultSet rs = prepStat.executeQuery();
 
-            while (rs.next()) {
+//            while (rs.next()) {
 //                System.out.println("Taki Id znalazlem dla tego nr konta " + rs.getInt("id"));
                 return rs.getInt("id");
-            }
+//            }
         } catch (SQLException e) {
             System.out.println("ERRRRROR: " + e.getMessage());
         }
@@ -102,6 +102,28 @@ public class DbOperations {
         return -1;
     }
 
+
+    protected void doTransfer(int amount, int id) {
+
+    }
+
+    protected static void addCashToCard(int amount, int id) {
+        String sql = "UPDATE card SET balance = balance + ? WHERE id = ?";
+
+        try (Connection connection = connect();
+        PreparedStatement prepStm = connection.prepareStatement(sql)) {
+
+            prepStm.setInt(1, amount);
+            prepStm.setInt(2, id);
+            prepStm.executeUpdate();
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
+    }
+
     protected static int getNextFreeId() {
         String sql = "SELECT MAX(id) FROM card";
 
@@ -121,7 +143,7 @@ public class DbOperations {
     protected static void createTable() {
 
         String sql = "CREATE TABLE IF NOT EXISTS card(\n"
-                + "id INTEGER NOT NULL PRIMARY KEY,\n"
+                + "id INTEGER NOT NULL PRIMARY KEY,\n"   // TODO: change to AUTOINCREMENT and UNIQUE?
                 + "number TEXT NOT NULL,\n"
                 + "pin TEXT NOT NULL,\n"
                 + "balance INTEGER DEFAULT 0 );\n";
