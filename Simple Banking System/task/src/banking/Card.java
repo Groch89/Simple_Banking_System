@@ -1,18 +1,27 @@
 package banking;
 
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Card {
+
+    private int[] cardNumber = new int[16];                         // array to store complete card number (BIN + account Number + checksum)
+    private final int[] BIN = {4, 0, 0, 0, 0, 0};                   // array to store BIN number (first 6 digits, for this project its constant 400000)
+    private final int[] accountNumber = new int[9];                 // array to store account number (9 digits)
+    private final int[] pin = new int[4];                           // array to store pin
 
     Card() {                        // after creating new Card object
         setCardNumber();            // set whole Card number
         setPin();                   // and PIN for it
     }
 
-    private final int[] cardNumber = new int[16];                   // array to store complete card number (BIN + account Number + checksum)
-    private final int[] BIN = {4, 0, 0, 0, 0, 0};                   // array to store BIN number (first 6 digits, for this project its constant 400000)
-    private final int[] accountNumber = new int[9];                 // array to store account number (9 digits)
-    private final int[] pin = new int[4];                           // array to store pin
+    Card(String numberAsString) {
+        for (int i = 0; i < numberAsString.length(); i++) {
+            cardNumber[i] = Integer.parseInt(numberAsString.substring(i, i + 1));
+        }
+    }
+
+
 
     private void generateAccountNumber() {                          // method to create random account number
         for (int i = 0; i < accountNumber.length; i++) {            // (each cell holds digit from 0 to 9, both inclusive)
@@ -20,11 +29,11 @@ public class Card {
         }
     }
 
-    private int setChecksum(int[] cardNumber) {
+    private int setChecksum(int[] cardNumber) {                     // setting valid checksum for provided CardNumber
         int sum = setSumForLuhnAlgorithm(cardNumber);
 
         int rest = sum % 10;                                        // (sum + rest) have to be equal to multiple of 10
-        return rest == 0 ? 0 : 10 - rest;                           // rest have to be in range 0-9, so if it's = 10, return 0
+        return rest == 0 ? 0 : 10 - rest;                           // rest have to be in range 0-9, so if it's = 10, return 0 //errorchecked (not 10 - 0)
     }                                                               // otherwise return (10 - rest) as our checksum
 
     private void setCardNumber() {                              // method to create whole card number
@@ -66,11 +75,12 @@ public class Card {
         return cardNumberAsString;
     }
 
-    protected boolean passedLuhnAlgorithm(int[] card) {
+    protected boolean passedLuhnAlgorithm() {         // return true when (sum + checksum) is equal to multiply od 10
 
-        int sum = setSumForLuhnAlgorithm(card);
 
-        int checksum = card[card.length - 1];
+        int sum = setSumForLuhnAlgorithm(cardNumber);
+
+        int checksum = cardNumber[cardNumber.length - 1];
 
         return (sum + checksum) % 10 == 0;
 

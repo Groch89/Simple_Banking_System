@@ -52,8 +52,8 @@ public class DbOperations {
 //            }
         } catch (SQLException e) {
             System.out.println("ERRRRROR: " + e.getMessage());
+            return -1;
         }
-        return -1;
     }
 
     protected static String getPinFromId(int id) {
@@ -102,11 +102,6 @@ public class DbOperations {
         return -1;
     }
 
-
-    protected void doTransfer(int amount, int id) {
-
-    }
-
     protected static void addCashToCard(int amount, int id) {
         String sql = "UPDATE card SET balance = balance + ? WHERE id = ?";
 
@@ -138,6 +133,22 @@ public class DbOperations {
 
 //        System.out.println("wyszedl error i musze zwrocic zero :( getMaxId");
         return 0;
+    }
+
+    protected static void deleteAccount(int id) {
+        String sql = "DELETE FROM card WHERE id = ?";
+
+        try (Connection connection = connect();
+             PreparedStatement prepStm = connection.prepareStatement(sql)) {
+
+            prepStm.setInt(1, id);
+            prepStm.executeUpdate();
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+
+        }
     }
 
     protected static void createTable() {

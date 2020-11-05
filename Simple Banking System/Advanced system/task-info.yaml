@@ -858,6 +858,101 @@ files:
 - name: src/banking/DbOperations.java
   visible: true
   learner_created: true
+- name: card.s3db
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/93/stages/518/implement
-status: Unchecked
+status: Failed
+feedback:
+  message: |-
+    Wrong answer in test #11
+
+    You should not allow a transfer if there is not enough money in the account to complete it. You should print &#39;Not enough money!&#39;
+
+    Please find below the output of your program during this failed test.
+    Note that the &#39;&gt;&#39; character indicates the beginning of the input line.
+
+    ---
+
+    Arguments: -fileName card.s3db
+
+    1. Create an account
+    2. Log into account
+    0. Exit
+    &gt; 1
+
+    Your card has been created
+    Your card number:
+    4000004797729740
+    Your card PIN:
+    1450
+
+    1. Create an account
+    2. Log into account
+    0. Exit
+    &gt; 1
+
+    Your card has been created
+    Your card number:
+    4000000614706739
+    Your card PIN:
+    7485
+
+    1. Create an account
+    2. Log into account
+    0. Exit
+    &gt; 2
+
+    Enter your card number:
+    &gt; 4000000614706739
+    Enter your PIN:
+    &gt; 7485
+    You have successfully logged in!
+
+    1. Balance
+    2. Add income
+    3. Do transfer
+    4. Close account
+    5. Log out
+    0. Exit
+    &gt; 3
+
+    Transfer
+    Enter card number:
+    &gt; 2000007269641764
+    Probably you made mistake in the card number. Please try again!
+    1. Balance
+    2. Add income
+    3. Do transfer
+    4. Close account
+    5. Log out
+    0. Exit
+    &gt; 3
+
+    Transfer
+    Enter card number:
+    &gt; 2000007269641768
+    ERRRRROR: ResultSet closed
+    Such a card does not exist.
+    1. Balance
+    2. Add income
+    3. Do transfer
+    4. Close account
+    5. Log out
+    0. Exit
+    &gt; 3
+
+    Transfer
+    Enter card number:
+    &gt; 4000004797729740
+    Enter how much money you want to transfer:
+    &gt; 100000
+    Success!
+    1. Balance
+    2. Add income
+    3. Do transfer
+    4. Close account
+    5. Log out
+    0. Exit
+  time: Thu, 05 Nov 2020 12:07:07 UTC
 record: -1

@@ -65,11 +65,11 @@ public class Main {
 
                 case 0:
                     isRunning = false;
-                    System.out.println("Bye!");
+                    System.out.println("Bye!\n");
                     break;
 
                 default:
-                    System.out.println("Wrong input! Please try again.");
+                    System.out.println("Wrong input! Please try again.\n");
             }
         }
     }
@@ -90,34 +90,64 @@ public class Main {
             System.out.println("");
 
             switch (usersChoice) {
-                case 1:                                                     // case 1: show balance
+                case 1:                                                     // case 1: show balance  ******************************************
                     int balance = DbOperations.getBalanceFromDbUsingId(id); // use id to get balance from db
                     System.out.println("Balance: " + balance + "\n");       // and show it to user
                     break;
-                case 2:
-                    // dodaj kase do konta
+                case 2:                                                     // case 2: add income    ******************************************
                     System.out.println("Enter income:");
                     int income = scanner.nextInt();
-                    DbOperations.addCashToCard(income, id);
+                    DbOperations.addCashToCard(income, id);                 // add specified amount of cash, to account with corresponding id
                     System.out.println("Income was added!\n");
                     break;
-                case 3:
-                    // wykonaj przelew
+                case 3:                                                     // case 3: do transfer   ******************************************
+                    System.out.println("Transfer");
+                    System.out.println("Enter card number:");
+                    String cardNumber = scanner.next();
+
+                    Card template = new Card(cardNumber);
+
+                    boolean passedLuhnAlgorithm = template.passedLuhnAlgorithm();
+
+                    if (passedLuhnAlgorithm) {
+                        int idDestinationsCard = DbOperations.selectCardNumberAndReturnId(cardNumber);
+                        if (idDestinationsCard < 0) {
+                            System.out.println("Such a card does not exist.\n");
+                        } else if(idDestinationsCard == id) {
+                            System.out.println("You can't transfer money to the same account!\n");
+                        } else {
+                            System.out.println("Enter how much money you want to transfer:");
+                            int amountToTransfer = scanner.nextInt();
+
+                            if (amountToTransfer > DbOperations.getBalanceFromDbUsingId(id)) {
+                                System.out.println("Not enough money!\n");
+                            } else {
+                                DbOperations.addCashToCard(amountToTransfer, idDestinationsCard);
+                                DbOperations.addCashToCard(-amountToTransfer, id);
+                                System.out.println("Success!\n");
+                            }
+                        }
+                    } else {
+                        System.out.println("Probably you made mistake in the card number. Please try again!\n");
+                    }
                     break;
-                case 4:
-                    // zamknij konto
+
+                case 4:                                                     // case 4: close account ******************************************
+                    DbOperations.deleteAccount(id);
+                    System.out.println("The account has been closed!\n");
+                    isLoggedIn = false;
                     break;
-                case 5:                                                     // case 5: to log out
+                case 5:                                                     // case 5: to log out    ******************************************
                     isLoggedIn = false;                                     //set to false to terminate while loop
                     System.out.println("You have successfully logged out!\n");  // isExited remains false,
                     break;                                                  // so we just sign out, not quiting
 
-                case 0:                                                     // case 0: used to exit from whole application
+                case 0:                                                     // case 0: used to exit from whole application  *******************
                     isExited = true;                                        // used to let know that we're not logging out, but quitting
                     isLoggedIn = false;                                     // set false to terminate while loop
                     break;
                 default:
-                    System.out.println("Wrong input. Please try again.");
+                    System.out.println("Wrong input. Please try again.\n");
                     break;
             }
         }
